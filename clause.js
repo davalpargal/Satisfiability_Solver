@@ -12,6 +12,9 @@ var Clause = function() {
     this.isEmpty = function(){
        return scope.literals.length == 0 ;
     };
+    this.isUnitClause = function(){
+       return scope.literals.length == 1 ;
+    };
 };
 
 var CNF = function() {
@@ -24,33 +27,40 @@ var CNF = function() {
        return scope.formula.length == 0;
     };
     this.containsEmpty = function(){
-      for(var x in scope.formula){
-         if (scope.formula[x].isEmpty())
-             return true;
-      }
-      return false;
+        for(var x in scope.formula){
+            if (scope.formula[x].isEmpty())
+                return true;
+        }
+        return false;
+    };
+    this.containsUnitClause = function(){
+        for(var x in scope.formula){
+            if (scope.formula[x].isUnitClause())
+                return true;
+        }
+        return false;        
     };
     this.setLiteral = function(literalName, value) {
-	var spliceList = [];
+	    var spliceList = [];
         for(var f in scope.formula) {
             for(var l in scope.formula[f].literals ) {
                 var literal = scope.formula[f].literals[l];
                 if(literal.name == literalName) {
                     var literalValue = literal.isNegate ? !value : value;
-//		    console.log('[clause]> ' + literalName + ' = ' + literalValue);
+//		            console.log('[clause]> ' + literalName + ' = ' + literalValue);
                     if (literalValue) {
-			spliceList.push(f);
+	 		            spliceList.push(f);
                         break;
                     } else {
-                        scope.formula[f].literals.splice(l, 1);
+                         scope.formula[f].literals.splice(l, 1);
                     }
                 }
             }
         }
-	spliceList.sort(function(a, b) {
-		return b - a;
-	});
-	for (var i in spliceList)
-		scope.formula.splice(spliceList[i], 1);
+	    spliceList.sort(function(a, b) {
+		    return b - a;
+	    });
+	    for (var i in spliceList)
+		   scope.formula.splice(spliceList[i], 1);
     };
 };
