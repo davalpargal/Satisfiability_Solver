@@ -1,5 +1,5 @@
 var n = 3; // no of literals
-var m = 2; // no of clauses
+var m = 3; // no of clauses
 function dpll(CNF, d){
   if (d > n) return -1;
   if (CNF.isEmpty()) {
@@ -29,22 +29,26 @@ function dpll(CNF, d){
      }
      return -1;
   }
-}
+};
 
 var testCNF = new CNF();
 var c1 = new Clause();
 c1.addLiteral(new Literal('L1', false));
-c1.addLiteral(new Literal('L2', false));
+c1.addLiteral(new Literal('L4', false));
 c1.addLiteral(new Literal('L3', true));
 
 var c2 = new Clause();
-c2.addLiteral(new Literal('L1', true));
+c2.addLiteral(new Literal('L1', false));
 c2.addLiteral(new Literal('L2', true));
 c2.addLiteral(new Literal('L3', false));
 
+var c3 = new Clause();
+c3.addLiteral(new Literal('L1', true));
+
 testCNF.addClause(c1);
 testCNF.addClause(c2);
+//testCNF.addClause(c3);
 
 var ans = dpll(testCNF, 1);
 if (ans == -1) ans = 'Unsatisfiable';
-console.log(ans);
+console.log('basic dpll: ',ans);
