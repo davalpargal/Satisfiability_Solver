@@ -40,19 +40,20 @@ var CNF = function() {
         }
         return false;        
     };
-    this.setLiteral = function(literalName, value) {
+    this.setLiteral = function(targetLiteral, value) {
+        value = targetLiteral.isNegate ? !value : value;
 	    var spliceList = [];
         for(var f in scope.formula) {
             for(var l in scope.formula[f].literals ) {
                 var literal = scope.formula[f].literals[l];
-                if(literal.name == literalName) {
+                if(literal.name == targetLiteral.name) {
                     var literalValue = literal.isNegate ? !value : value;
 //		            console.log('[clause]> ' + literalName + ' = ' + literalValue);
                     if (literalValue) {
 	 		            spliceList.push(f);
                         break;
                     } else {
-                         scope.formula[f].literals.splice(l, 1);
+                        scope.formula[f].literals.splice(l, 1);
                     }
                 }
             }

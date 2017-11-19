@@ -47,7 +47,7 @@ c3.addLiteral(new Literal('L1', true));
 
 testCNF.addClause(c1);
 testCNF.addClause(c2);
-//testCNF.addClause(c3);
+testCNF.addClause(c3);
 
 var ans = dpll(testCNF, 1);
 if (ans == -1) ans = 'Unsatisfiable';
