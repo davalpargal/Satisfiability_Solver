@@ -1,6 +1,5 @@
 var T = [];        // Resultant CNF from setting up literals from I
 
-
 function unit_propagation(CNF, I){
     // console.log('CNF : ', CNF.formula[0].literals);
 	while(CNF.containsUnitClause()){  
