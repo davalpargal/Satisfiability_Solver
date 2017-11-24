@@ -3,8 +3,9 @@ var Literal = function(name,isNegate) {
     this.isNegate = isNegate;
 };
 
-var Clause = function() {
+var Clause = function(set) {
     this.literals = [];
+    this.isSet = set;
     var scope = this;
     this.addLiteral = function(literal){
       scope.literals.push(literal);
@@ -24,7 +25,11 @@ var CNF = function() {
         scope.formula.push(clause);
         };
     this.isEmpty = function(){
-       return scope.formula.length == 0;
+        for (var c in scope.formula ) {
+            if(!scope.formula[c].isSet)
+            return false;      
+        };
+        return true;
     };
     this.containsEmpty = function(){
         for(var x in scope.formula){
@@ -35,6 +40,8 @@ var CNF = function() {
     };
     this.containsUnitClause = function(){
         for(var x in scope.formula){
+            if(scope.formula[x].isSet)
+                continue;
             if (scope.formula[x].isUnitClause())
                 return true;
         }
@@ -42,15 +49,16 @@ var CNF = function() {
     };
     this.setLiteral = function(targetLiteral, value) {
         value = targetLiteral.isNegate ? !value : value;
-	    var spliceList = [];
         for(var f in scope.formula) {
+            if(scope.formula[f].isSet)
+                continue;
             for(var l in scope.formula[f].literals ) {
                 var literal = scope.formula[f].literals[l];
                 if(literal.name == targetLiteral.name) {
                     var literalValue = literal.isNegate ? !value : value;
 //		            console.log('[clause]> ' + literalName + ' = ' + literalValue);
                     if (literalValue) {
-	 		            spliceList.push(f);
+	 		            scope.formula[f].isSet = true;
                         break;
                     } else {
                         scope.formula[f].literals.splice(l, 1);
@@ -58,10 +66,10 @@ var CNF = function() {
                 }
             }
         }
-	    spliceList.sort(function(a, b) {
-		    return b - a;
-	    });
-	    for (var i in spliceList)
-		   scope.formula.splice(spliceList[i], 1);
+	    // spliceList.sort(function(a, b) {
+		   //  return b - a;
+	    // });
+	    // for (var i in spliceList)
+		   // scope.formula.splice(spliceList[i], 1);
     };
 };
