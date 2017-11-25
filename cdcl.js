@@ -8,6 +8,7 @@ var dl = 0;        // decision level
 var learned_set = [] ;
 
 function resolve(clause1, clause2, literal){
+    console.log()
     var finalClause = new Clause();
     for( var l in clause1.literals){
         if(clause1.literals[l].name == literal.name){
@@ -27,8 +28,28 @@ function resolve(clause1, clause2, literal){
         if(refineClause[finalClause.literals[l].name] == true || refineClause[finalClause.literals[l].name] == false ){}
         refineClause[finalClause.literals[l].name] = finalClause.literals[l].isNegate;
     } 
-    console.log(refineClause);
+
     return finalClause;
+};
+
+function UIP(clause, V) {
+    var count = 0;
+    for(var l in clause.literals){
+        if(V[clause.literals[l].name - 1][1] == dl)
+            count = count + 1; 
+    }
+    return count == 1;
+};
+
+function secondHighestDecisionLevel(clause, V) {
+    var highest = dl ;
+    var secondHighest = 0;
+    console.log(highest);
+    for(var l in clause.literals){ 
+        if(V[clause.literals[l].name - 1][1] < highest  && V[clause.literals[l].name - 1][1] > secondHighest)
+            secondHighest = V[clause.literals[l].name - 1][1];
+    }
+    return secondHighest;
 };
 
 function unit_propagation(CNF){
@@ -66,15 +87,17 @@ function conflictAnalysis(CNF, V){                      // 1-UIP
     // console.log('conflict clause : ', conflict_clause);
     var finalClause = JSON.parse(JSON.stringify(conflict_set));
     for(var x in conflict_set.literals){ 
-        console.log(conflict_set.literals[x].name);
-        //finalClause = resolve(finalClause,CNF.formula[antecedent[conflict_set.literals[x].name - 1]],conflict_set.literals[x].name);
-        if(UIP(finalClause)) break;
+        if(antecedent[conflict_set.literals[x].name - 1] == undefined ) continue;
+        console.log(antecedent[conflict_set.literals[x].name - 1]);
+        finalClause = resolve(finalClause,CNF.formula[antecedent[conflict_set.literals[x].name - 1]],conflict_set.literals[x]);
+        if(UIP(finalClause, V)) break;
     }
     // for(var x in conflict_set.literals){
     //     conflict_set.literals[0].isNegate = !conflict_set.literals[0].isNegate;
     // }
+    console.log(finalClause.literals);
     learned_set = finalClause;
-    // var b = secondHighestDecisionLevel(finalClause) ; 
+    var b = secondHighestDecisionLevel(finalClause) ; 
     // return b;
     return dl-1 ;
 }
@@ -98,7 +121,6 @@ function cdcl(CNF, V){
     //console.log(V[0]);
     while(V.length != m){
     	var l = chooseLiteral(CNF);
-        console.log('lit');
         var newCNF = JSON.parse(JSON.stringify(CNF));
         var assignment = V.slice() ; 
         memo[dl] = [newCNF, assignment] ;
@@ -118,7 +140,7 @@ function cdcl(CNF, V){
         for(var l in I){
             V[I[l].name - 1] = [ I[l].isNegate ? false : true, dl ];       
         };
-
+//        console.log(secondHighestDecisionLevel(CNF.formula[1], V));        
         if (conflict) {
             //console.log('Check: ', dl);
             var b = conflictAnalysis(CNF, V);
@@ -132,7 +154,7 @@ function cdcl(CNF, V){
         };
     }
     return V;
-  };
+};
 
 var testCNF = new CNF();
 var c1 = new Clause(false);
@@ -141,6 +163,7 @@ c1.addLiteral(new Literal('3', true));
 
 var c2 = new Clause(false);
 c2.addLiteral(new Literal('1', true));
+//c2.addLiteral(new Literal('5', true));
 c2.addLiteral(new Literal('2', false));
 c2.addLiteral(new Literal('3', false));
     
@@ -157,13 +180,13 @@ c5.addLiteral(new Literal('4', true));
 
 
 testCNF.addClause(c1);
-testCNF.addClause(c3);
 testCNF.addClause(c2);
+testCNF.addClause(c3);
 testCNF.addClause(c4);
 testCNF.addClause(c5);
 
-//var I = unit_propagation(testCNF);
-// var ans = cdcl(testCNF, []);
+var I = unit_propagation(testCNF);
+var ans = cdcl(testCNF, []);
 // if(ans == -1) console.log('unsatisiable');
 
 // else {
@@ -171,4 +194,4 @@ testCNF.addClause(c5);
 //         console.log('Set ',ans[i].name, ' as', !ans[i].isNegate);
 //     };
 // };
-var ans = resolve(c2,c3,new Literal('2', false));
+//var ans = resolve(c2,c3,new Literal('2', false));

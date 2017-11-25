@@ -75,11 +75,11 @@ testCNF.addClause(c1);
 testCNF.addClause(c2);
 testCNF.addClause(c3);
 //unit_propagation(testCNF);
-var ans = dpll_propagated(testCNF);
-if(ans == -1) console.log('unsatisiable');
+// var ans = dpll_propagated(testCNF);
+// if(ans == -1) console.log('unsatisiable');
 
-else {
-    for(var i in ans){
-        console.log('Set ',ans[i].name, ' as', !ans[i].isNegate);
-    }
-}
+// else {
+//     for(var i in ans){
+//         console.log('Set ',ans[i].name, ' as', !ans[i].isNegate);
+//     }
+// }
