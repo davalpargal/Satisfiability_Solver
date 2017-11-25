@@ -102,16 +102,18 @@ function readCNF(input) {
 				}
 			}
         }
-		printCNF(cnf);
-		
+		//printCNF(cnf);
+		console.time('dpll_propagated');
 		var ans = dpll_propagated(cnf);
-		if(ans == -1) console.log('unsatisiable');
+		console.timeEnd('dpll_propagated');
+		if(ans == -1) console.log('unsatisfiable');
 		else {
-			for(var i in ans){
-				console.log('Set ',ans[i].name, ' as', !ans[i].isNegate);
-			}
+			// for(var i in ans){
+			// 	console.log('Set ',ans[i].name, ' as', !ans[i].isNegate);
+			// }
+			console.log('Satisfiable!!')
 		}
-		printCNF(cnf);
+		//printCNF(cnf);
     };
 
     reader.onerror = (evt) => {

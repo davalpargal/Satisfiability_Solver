@@ -1,4 +1,4 @@
-var m = 6              // no. of variables present
+var m = 20              // no. of variables present
 var antecedent = new Array(m);
 var conflict_clause = -1;
 var memo = new Array(m);
@@ -7,28 +7,33 @@ var conflict = false;
 var dl = 0;        // decision level
 var learned_set = [] ;
 
-function resolve(clause1, clause2, literal){
-    console.log()
-    var finalClause = new Clause();
-    for( var l in clause1.literals){
-        if(clause1.literals[l].name == literal.name){
-            clause1.literals.splice(l, 1);
-            break;
-        }
+function resolve(clause1, clause2) {
+    var finalClause = new Clause(false);
+    var resolved_set = [];
+    var addLiteral;             // should the literal be added in the final conflict clause
+    for( var l1 in clause1.literals) {
+        addLiteral = true;
+        for(var l2 in clause2.literals) {
+            if(clause1.literals[l1].name == clause2.literals[l2].name) {
+                if(clause1.literals[l1].isNegate == clause2.literals[l2].isNegate)
+                    addLiteral = true;
+            }
+        }   
+        if(addLiteral)
+            finalClause.literals.push(clause1.literals[l1]);
     }
-    for( var l in clause2.literals){
-        if(clause2.literals[l].name == literal.name){
-            clause2.literals.splice(l, 1);
-            break;
-        }
-    }
-    finalClause.literals =  clause1.literals.concat(clause2.literals);
-    var refineClause = [];
-    for(var l in finalClause.literals){
-        if(refineClause[finalClause.literals[l].name] == true || refineClause[finalClause.literals[l].name] == false ){}
-        refineClause[finalClause.literals[l].name] = finalClause.literals[l].isNegate;
-    } 
 
+    for( var l2 in clause2.literals) {
+        addLiteral = false;
+        for(var l1 in clause1.literals) {
+            if(clause2.literals[l2].name == clause1.literals[l1].name) {
+                if(clause2.literals[l2].isNegate == clause1.literals[l1].isNegate)
+                    addLiteral = true;
+            }
+        }
+        if(addLiteral)
+            finalClause.literals.push(clause2.literals[l2]);
+    }
     return finalClause;
 };
 
@@ -185,8 +190,8 @@ testCNF.addClause(c3);
 testCNF.addClause(c4);
 testCNF.addClause(c5);
 
-var I = unit_propagation(testCNF);
-var ans = cdcl(testCNF, []);
+//var I = unit_propagation(testCNF);
+//var ans = cdcl(testCNF, []);
 // if(ans == -1) console.log('unsatisiable');
 
 // else {
@@ -194,4 +199,5 @@ var ans = cdcl(testCNF, []);
 //         console.log('Set ',ans[i].name, ' as', !ans[i].isNegate);
 //     };
 // };
-//var ans = resolve(c2,c3,new Literal('2', false));
+var ans = resolve(c2,c3);
+console.log(ans);
